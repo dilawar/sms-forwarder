@@ -7,10 +7,10 @@ export PATH:=$(PATH):$(ANDROID_SDK_ROOT)/platform-tools
 dev:
 	yarn quasar dev
 
+
 build_android:
 	echo ANDROID_HOME=$(ANDROID_HOME)
-	yarn quasar build
-	yarn quasar build -m capacitor -T android
+	yarn quasar build && cd ./src-capacitor && npx cap run android
 
 run_android: build_android
 	yarn quasar dev -m capacitor -T android
