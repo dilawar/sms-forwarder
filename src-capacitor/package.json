@@ -1,6 +1,6 @@
 {
   "name": "sms-forwarder",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A simple SMS forwarder",
   "author": "Dilawar Singh <dilawar@dognosis.tech>",
   "private": true,
