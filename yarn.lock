@@ -41,6 +41,16 @@
   resolved "https://registry.yarnpkg.com/@bufbuild/protobuf/-/protobuf-2.2.5.tgz#8e82c0af292113b4a89f8b658c71c4636c8d2e36"
   integrity sha512-/g5EzJifw5GF8aren8wZ/G5oMuPoGeS6MQD3ca8ddcvdXR5UELUfdTZITCGNhNXynY/AYl3Z4plmxdj/tRl/hQ==
 
+"@capawesome-team/capacitor-android-battery-optimization@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@capawesome-team/capacitor-android-battery-optimization/-/capacitor-android-battery-optimization-7.0.0.tgz#8c068c814b347a32e4be107ee06230fcc26268c6"
+  integrity sha512-an60fr+GxoT4+azWn9NGQOTmVuOB1J1NpzSAJ6CZ5kdJjG65T/gZyKIPIzLAHikMcXD4F+5ZLZ8MCCaWhWe4Dg==
+
+"@capawesome-team/capacitor-android-foreground-service@^7.0.1":
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/@capawesome-team/capacitor-android-foreground-service/-/capacitor-android-foreground-service-7.0.1.tgz#f967fb91f9fe122531bcde8c2bf4204dd22c2f86"
+  integrity sha512-JjeINYZ5SL81TV1D2WYIE2fmd1MlxHbIzB2gsNKINt9Ge3gkbdh7P/Urb3gSPPz4UWJoUFiCLFaHBRJvu+EP6Q==
+
 "@esbuild/aix-ppc64@0.25.1":
   version "0.25.1"
   resolved "https://registry.yarnpkg.com/@esbuild/aix-ppc64/-/aix-ppc64-0.25.1.tgz#c33cf6bbee34975626b01b80451cbb72b4c6c91d"
