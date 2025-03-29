@@ -10,7 +10,7 @@ dev:
 
 build_android:
 	echo ANDROID_HOME=$(ANDROID_HOME)
-	yarn quasar build && cd ./src-capacitor && npx cap run android
+	yarn quasar build -m capacitor -T android && cd ./src-capacitor && npx cap run android
 
 run_android: build_android
 	yarn quasar dev -m capacitor -T android
