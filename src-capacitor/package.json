@@ -1,0 +1,13 @@
+{
+  "name": "sms-forwarder",
+  "version": "0.0.1",
+  "description": "A simple SMS forwarder",
+  "author": "Dilawar Singh <dilawar@dognosis.tech>",
+  "private": true,
+  "dependencies": {
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/app": "^7.0.0",
+    "@capacitor/cli": "^7.0.0",
+    "@capacitor/core": "^7.0.0"
+  }
+}
