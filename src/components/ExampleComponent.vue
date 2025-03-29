@@ -9,12 +9,55 @@
     <p>Count: {{ todoCount }} / {{ meta.totalCount }}</p>
     <p>Active: {{ active ? 'yes' : 'no' }}</p>
     <p>Clicks on todos: {{ clickCount }}</p>
+
+    <p>Is battery optimization {{ batteryOptmization }} </p>
+
+    <q-btn @click="_ => openBatteryOptimizationSettings()">
+      Open Better Settings
+    </q-btn>
+    <q-btn @click="_ => requestIgnoreBatteryOptimization()">
+      Requst Better Optimization
+    </q-btn>
+
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import type { Todo, Meta } from './models';
+
+import { Capacitor } from '@capacitor/core';
+import { BatteryOptimization } from '@capawesome-team/capacitor-android-battery-optimization';
+
+const batteryOptmization = ref(false)
+
+onMounted(async () => {
+  batteryOptmization.value = await isBatteryOptimizationEnabled()
+})
+
+const isBatteryOptimizationEnabled = async () => {
+  if (Capacitor.getPlatform() !== 'android') {
+    return false;
+  }
+  const { enabled } = await BatteryOptimization.isBatteryOptimizationEnabled();
+  return enabled;
+};
+
+
+const openBatteryOptimizationSettings = async () => {
+  if (Capacitor.getPlatform() !== 'android') {
+    return;
+  }
+  await BatteryOptimization.openBatteryOptimizationSettings();
+};
+
+const requestIgnoreBatteryOptimization = async () => {
+  if (Capacitor.getPlatform() !== 'android') {
+    return;
+  }
+  await BatteryOptimization.requestIgnoreBatteryOptimization();
+};
+
 
 interface Props {
   title: string;

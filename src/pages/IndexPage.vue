@@ -12,6 +12,8 @@
 import { ref } from 'vue';
 import type { Meta } from 'components/models';
 
+import ExampleComponent from 'components/ExampleComponent.vue';
+
 const meta = ref<Meta>({
   totalCount: 1200
 });
