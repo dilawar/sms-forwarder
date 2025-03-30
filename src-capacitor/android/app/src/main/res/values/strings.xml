@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">SMS Forwarder</string>
-    <string name="title_activity_main">SMS Forwarder</string>
-    <string name="package_name">com.dilawar.smsfwd</string>
-    <string name="custom_url_scheme">com.dilawar.smsfwd</string>
-</resources>
