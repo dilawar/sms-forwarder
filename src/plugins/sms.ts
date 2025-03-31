@@ -2,6 +2,7 @@ import { registerPlugin } from '@capacitor/core';
 
 export interface SmsPlugin {
     echo(options: { value: string }): Promise<{value: string}>;
+    requestPermissions(): Promise<void>;
 }
 
 const Sms = registerPlugin<SmsPlugin>('SmsPlugin');
