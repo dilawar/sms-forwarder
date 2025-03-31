@@ -8,4 +8,6 @@
 <script setup lang="ts">
 import BatteryOptimizationComponent from 'components/BatteryOptimizationComponent.vue';
 
+// Request permissions.
+
 </script>
