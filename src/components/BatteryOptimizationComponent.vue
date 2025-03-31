@@ -17,6 +17,8 @@
     <div v-else>
       <p>This app is not under battery optimization. Yay!</p>
     </div>
+
+    <q-btn @click="echoFromPlugin">Echo From Plugin</q-btn>
   </q-page>
 </template>
 
@@ -25,6 +27,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { Capacitor } from '@capacitor/core';
 import { BatteryOptimization } from '@capawesome-team/capacitor-android-battery-optimization';
+import Sms from '../plugins/sms';
 
 defineProps({
   title: String,
@@ -35,6 +38,15 @@ const batteryOptmization = ref(false);
 onMounted(async () => {
   batteryOptmization.value = await isBatteryOptimizationEnabled();
 });
+
+const echoFromPlugin = async () => {
+  if (Capacitor.getPlatform() !== 'android') {
+    console.debug('Not android');
+    return false;
+  }
+  const { value } = await Sms.echo({ value: 'Hello from JS' });
+  console.debug('response from native:', value);
+};
 
 const isBatteryOptimizationEnabled = async () => {
   if (Capacitor.getPlatform() !== 'android') {
