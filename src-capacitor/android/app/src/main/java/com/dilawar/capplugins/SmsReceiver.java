@@ -8,6 +8,8 @@ import android.telephony.SmsMessage;
 import android.util.Log;
 // import android.widget.Toast;
 
+import com.dilawar.Message;
+
 import java.util.Objects;
 
 /**
@@ -46,7 +48,7 @@ public class SmsReceiver extends BroadcastReceiver {
                 // Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
 
                 // Broadcast this message so that UI activity can listen to it.
-                LiveSmsManager.getLiveSms().sendNotification(message);
+                LiveSmsManager.getLiveSms().sendNotification(new Message(sender, message));
             }
         }
     }

@@ -20,6 +20,7 @@ import androidx.lifecycle.Observer;
 
 import android.content.pm.PackageManager;
 
+import com.dilawar.Message;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -40,16 +41,19 @@ public class SmsPlugin extends Plugin {
     static final String RECEIVE_SMS = "RECEIVE_SMS";
     private final String TAG = "sms_plugin";
 
-    private final Observer<String> liveSmsObserver = new Observer<String>() {
+    // Observes SMS sent over LiveData.
+    private final Observer<Message> liveSmsObserver = new Observer<Message>() {
         @Override
-        public void onChanged(String s) {
-            Log.i(TAG, "Got new sms: " + s);
+        public void onChanged(Message m) {
+            Log.i(TAG, "Got new sms: " + m);
         }
     };
 
+    // When plugin is loaded.
     @Override
     public void load() {
         Log.i(TAG, "Calling plugin load...");
+        // Where do I remove this listener?
         LiveSmsManager.getLiveSms().observeForever(liveSmsObserver);
     }
 
@@ -70,9 +74,11 @@ public class SmsPlugin extends Plugin {
         super.requestPermissionForAliases(aliases, call, "smsPermissionCallback");
     }
 
+
     @PermissionCallback
     private void smsPermissionCallback(PluginCall call) {
         Log.d(TAG, "smsPermissionCallback");
     }
+
 
 }
