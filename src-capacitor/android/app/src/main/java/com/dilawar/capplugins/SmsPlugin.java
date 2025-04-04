@@ -15,6 +15,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationBuilderWithBuilderAccessor;
+import androidx.lifecycle.Observer;
+
 import android.content.pm.PackageManager;
 
 import com.getcapacitor.JSObject;
@@ -36,26 +39,20 @@ public class SmsPlugin extends Plugin {
     // Permission alias constants.
     static final String RECEIVE_SMS = "RECEIVE_SMS";
     private final String TAG = "sms_plugin";
-    private BroadcastReceiver receiver;
 
-    public void onCreate() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction("com.dilawar.cppplugins.ACTION_RECV_SMS");
-        Log.i(TAG, "Calling plugin onCreate...");
+    private final Observer<String> liveSmsObserver = new Observer<String>() {
+        @Override
+        public void onChanged(String s) {
+            Log.i(TAG, "Got new sms: " + s);
+        }
+    };
 
-        receiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                Log.d(TAG, "received ACTION_RECV_SMS" + intent);
-                Log.i(TAG, "received message " + context);
-            }
-        };
+    @Override
+    public void load() {
+        Log.i(TAG, "Calling plugin load...");
+        LiveSmsManager.getLiveSms().observeForever(liveSmsObserver);
     }
 
-    @PluginMethod(returnType = PluginMethod.RETURN_CALLBACK)
-    public void sendReceivedSMS(PluginCall call) {
-
-    }
 
     @PluginMethod()
     public void echo(PluginCall call) {
