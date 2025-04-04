@@ -41,13 +41,20 @@ public class SmsPlugin extends Plugin {
     public void onCreate() {
         IntentFilter filter = new IntentFilter();
         filter.addAction("com.dilawar.cppplugins.ACTION_RECV_SMS");
+        Log.i(TAG, "Calling plugin onCreate...");
 
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 Log.d(TAG, "received ACTION_RECV_SMS" + intent);
+                Log.i(TAG, "received message " + context);
             }
         };
+    }
+
+    @PluginMethod(returnType = PluginMethod.RETURN_CALLBACK)
+    public void sendReceivedSMS(PluginCall call) {
+
     }
 
     @PluginMethod()
