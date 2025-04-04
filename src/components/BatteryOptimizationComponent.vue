@@ -1,23 +1,21 @@
 <template>
-  <q-page class="q-px-sm">
-    <div v-if="batteryOptmization">
-      <p>
-        This application under battery optimization. For this app to work properly in the
-        background, please disable the battery optimization.
-      </p>
-      <div class="row">
-        <q-btn class="col" @click="(_) => openBatteryOptimizationSettings()">
-          Open Bettery Settings
-        </q-btn>
-        <q-btn class="col" @click="(_) => requestIgnoreBatteryOptimization()">
-          Ignore Battery Optimization
-        </q-btn>
-      </div>
+  <div v-if="batteryOptmization">
+    <p>
+      This application under battery optimization. For this app to work properly in the background,
+      please disable the battery optimization.
+    </p>
+    <div class="row">
+      <q-btn class="col" @click="(_) => openBatteryOptimizationSettings()">
+        Open Bettery Settings
+      </q-btn>
+      <q-btn class="col" @click="(_) => requestIgnoreBatteryOptimization()">
+        Ignore Battery Optimization
+      </q-btn>
     </div>
-    <div v-else>
-      <p>This app is not under battery optimization. Yay!</p>
-    </div>
-  </q-page>
+  </div>
+  <div v-else>
+    <p>This app is not under battery optimization. Yay!</p>
+  </div>
 </template>
 
 <script setup lang="ts">

@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@capacitor/core": "^7.1.0",
+    "@capacitor/preferences": "^7.0.1",
     "@capawesome-team/capacitor-android-battery-optimization": "^7.0.0",
     "@capawesome-team/capacitor-android-foreground-service": "^7.0.1",
     "@quasar/extras": "^1.16.4",
@@ -24,6 +25,7 @@
     "vue-router": "^4.0.12"
   },
   "devDependencies": {
+    "@capacitor/cli": "^7.2.0",
     "@eslint/js": "^9.14.0",
     "@quasar/app-vite": "^2.1.0",
     "@types/node": "^20.5.9",
