@@ -21,7 +21,7 @@ import Sms from '../plugins/sms';
 
 const echoFromPlugin = async () => {
   if (Capacitor.getPlatform() !== 'android') {
-    console.debug('Not android');
+    console.debug('This plugin is only supported on android.');
     return false;
   }
   const { value } = await Sms.echo({ value: 'Hello from JS' });
@@ -30,10 +30,10 @@ const echoFromPlugin = async () => {
 
 const readLiveSms = async () => {
   if (Capacitor.getPlatform() !== 'android') {
-    console.debug('Not android');
+    console.debug('This plugin is only supported on android.');
     return false;
   }
   const { result } = await Sms.getLiveSms();
-  console.debug('live sms:', result);
+  console.debug('live sms:', JSON.stringify(result));
 };
 </script>
