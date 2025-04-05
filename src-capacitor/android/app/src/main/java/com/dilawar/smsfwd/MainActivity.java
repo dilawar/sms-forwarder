@@ -1,6 +1,7 @@
 package com.dilawar.smsfwd;
 
 import android.os.Bundle;
+
 import com.dilawar.capplugins.SmsPlugin;
 import com.getcapacitor.BridgeActivity;
 

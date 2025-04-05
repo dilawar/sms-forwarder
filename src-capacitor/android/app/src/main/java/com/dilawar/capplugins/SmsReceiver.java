@@ -8,6 +8,8 @@ import android.telephony.SmsMessage;
 import android.util.Log;
 // import android.widget.Toast;
 
+import com.dilawar.Message;
+
 import java.util.Objects;
 
 /**
@@ -46,12 +48,7 @@ public class SmsReceiver extends BroadcastReceiver {
                 // Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
 
                 // Broadcast this message so that UI activity can listen to it.
-                Log.d(TAG, "Broadcasting received sms. UI better be listening.");
-                Intent sendSmsIntent = new Intent("com.dilawar.capplugins.ACTION_RECV_SMS");
-                sendSmsIntent.putExtra("com.dilawar.capplugins.SMS.DATA", message);
-                sendSmsIntent.putExtra("com.dilawar.capplugins.SMS.SENDER", sender);
-                sendSmsIntent.setPackage("com.dilawar.capplugins");
-                context.sendBroadcast(sendSmsIntent);
+                LiveSmsManager.getLiveSms().sendNotification(new Message(sender, message));
             }
         }
     }
