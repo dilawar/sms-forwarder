@@ -1,8 +1,13 @@
 <template>
-  <q-page class="row q-pa-sm">
+  <q-page class="row q-pa-sm justify-around">
     <div>
       <battery-optimization-component title="Battery optimization" />
       <forwarding-rules />
+    </div>
+
+    <!-- result section -->
+    <div>
+      Total SMS processed: <strong>{{ numMsgReceived }}</strong>
     </div>
 
     <!-- These are some buttons for testing. Remove them in release  -->
@@ -14,12 +19,17 @@
 </template>
 
 <script setup lang="ts">
-import { onUnmounted } from 'vue';
+import { ref, type Ref, onUnmounted } from 'vue';
 import { setIntervalAsync, clearIntervalAsync } from 'set-interval-async';
 import { Capacitor } from '@capacitor/core';
 import BatteryOptimizationComponent from 'components/BatteryOptimizationComponent.vue';
 import ForwardingRules from 'components/ForwardingRules.vue';
 import Sms from '../plugins/sms';
+
+/**
+ * Total number of sms read.
+ */
+const numMsgReceived: Ref<number> = ref(0);
 
 const readSmsLoop = setIntervalAsync(async () => {
   await readLiveSms();
@@ -40,6 +50,12 @@ const readLiveSms = async () => {
     return false;
   }
   const { result } = await Sms.getLiveSms();
+  try {
+    numMsgReceived.value += result.length;
+  } catch (e) {
+    /* handle error */
+    console.error('Failed to parse messages: ' + JSON.stringify(e));
+  }
   console.debug('Got sms from plugin:', JSON.stringify(result));
 };
 
