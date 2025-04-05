@@ -10,6 +10,9 @@ export interface SmsPlugin {
   echo(options: { value: string }): Promise<{ value: string }>;
   // Read live sms.
   getLiveSms(): Promise<{ result: Message[] }>;
+  // Query SMS
+  querySms(options: { query: string }): Promise<{ result: Message[] }>;
+  // Request permission.
   requestPermissions(): Promise<void>;
 }
 
