@@ -7,6 +7,9 @@
     <div>
       <q-btn @click="echoFromPlugin">Echo From Plugin</q-btn>
     </div>
+    <div>
+      <q-btn @click="readLiveSms">Read live message</q-btn>
+    </div>
   </q-page>
 </template>
 
@@ -23,5 +26,14 @@ const echoFromPlugin = async () => {
   }
   const { value } = await Sms.echo({ value: 'Hello from JS' });
   console.debug('response from native:', value);
+};
+
+const readLiveSms = async () => {
+  if (Capacitor.getPlatform() !== 'android') {
+    console.debug('Not android');
+    return false;
+  }
+  const { result } = await Sms.getLiveSms();
+  console.debug('live sms:', result);
 };
 </script>
