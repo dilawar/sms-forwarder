@@ -48,7 +48,7 @@ public class SmsPlugin extends Plugin {
     static final String RECEIVE_SMS = "RECEIVE_SMS";
     private final String TAG = "sms_plugin";
 
-    private List<Message> listOfMessages = new Vector();
+    private final List<Message> listOfMessages = new Vector();
 
     // Observes SMS sent over LiveData.
     private final Observer<Message> liveSmsObserver = new Observer<Message>() {
