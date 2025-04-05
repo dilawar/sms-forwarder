@@ -1,21 +1,29 @@
 <template>
-  <q-page class="row q-pa-sm justify-around">
-    <div>
-      <battery-optimization-component title="Battery optimization" />
+  <q-page-container>
+    <q-page padding class="row q-pa-sm justify-around" >
       <forwarding-rules />
-    </div>
+      <!-- result section -->
+      <div>
+        Total SMS processed: <strong>{{ numMsgReceived }}</strong>
+      </div>
 
-    <!-- result section -->
-    <div>
-      Total SMS processed: <strong>{{ numMsgReceived }}</strong>
-    </div>
+      <!-- These are some buttons for testing. Remove them in release  -->
+      <div class="row">
+        <q-btn @click="echoFromPlugin">Echo From Plugin</q-btn>
 
-    <!-- These are some buttons for testing. Remove them in release  -->
-    <div class="row justify-around fit">
-      <q-btn @click="echoFromPlugin">Echo From Plugin</q-btn>
-      <q-btn @click="readLiveSms">Read live message</q-btn>
-    </div>
-  </q-page>
+        <q-btn @click="readLiveSms">Read live message</q-btn>
+
+        <q-input v-model="query" /> <q-btn @click="sendQuery">Query SMS</q-btn>
+      </div>
+      <battery-optimization-component title="Battery optimization" />
+
+      <!-- place QPageScroller at end of page -->
+      <q-page-scroller position="bottom-left" :scroll-offset="150" :offset="[18, 18]">
+        <q-btn fab icon="keyboard_arrow_up" color="accent" />
+      </q-page-scroller>
+
+    </q-page>
+  </q-page-container>
 </template>
 
 <script setup lang="ts">
@@ -25,6 +33,8 @@ import { Capacitor } from '@capacitor/core';
 import BatteryOptimizationComponent from 'components/BatteryOptimizationComponent.vue';
 import ForwardingRules from 'components/ForwardingRules.vue';
 import Sms from '../plugins/sms';
+
+const query = ref('');
 
 /**
  * Total number of sms read.
@@ -57,6 +67,16 @@ const readLiveSms = async () => {
     console.error('Failed to parse messages: ' + JSON.stringify(e));
   }
   console.debug('Got sms from plugin:', JSON.stringify(result));
+};
+
+const sendQuery = async () => {
+  if (Capacitor.getPlatform() !== 'android') {
+    console.debug('This plugin is only supported on android.');
+    return false;
+  }
+  console.log('Quering ' + query.value);
+  const { result } = await Sms.querySms({ query: query.value });
+  console.debug('Got sms from plugin for query: ', JSON.stringify(result));
 };
 
 onUnmounted(async () => {
