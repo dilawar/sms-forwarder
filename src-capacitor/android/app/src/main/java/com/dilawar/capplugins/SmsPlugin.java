@@ -29,6 +29,13 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.annotation.Permission;
 import com.getcapacitor.annotation.PermissionCallback;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.List;
+import java.util.Vector;
+
 @CapacitorPlugin(
         name = "SmsPlugin",
         permissions = {
@@ -41,11 +48,14 @@ public class SmsPlugin extends Plugin {
     static final String RECEIVE_SMS = "RECEIVE_SMS";
     private final String TAG = "sms_plugin";
 
+    private List<Message> listOfMessages = new Vector();
+
     // Observes SMS sent over LiveData.
     private final Observer<Message> liveSmsObserver = new Observer<Message>() {
         @Override
         public void onChanged(Message m) {
             Log.i(TAG, "Got new sms: " + m);
+            listOfMessages.add(m);
         }
     };
 
@@ -65,6 +75,28 @@ public class SmsPlugin extends Plugin {
         JSObject ret = new JSObject();
         ret.put("value", value);
         call.resolve(ret);
+    }
+
+    @PluginMethod()
+    public void getLiveSms(PluginCall call) {
+        JSONObject ret = new JSONObject();
+        while( ! listOfMessages.isEmpty()) {
+            Message m = listOfMessages.remove(0);
+            JSONObject sms = new JSONObject();
+            try {
+                sms.put("sender", m.sender);
+                sms.put("message", m.message);
+                ret.append("result", sms);
+            } catch (JSONException e) {
+                Log.e(TAG, "Could not convert Message to JSON");
+            }
+        }
+
+        try {
+            call.resolve(JSObject.fromJSONObject(ret));
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to convert JSONObject to JSObject.");
+        }
     }
 
     @PluginMethod()
