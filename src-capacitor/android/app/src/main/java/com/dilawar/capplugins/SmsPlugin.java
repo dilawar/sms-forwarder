@@ -10,6 +10,7 @@ import android.util.Log;
 import androidx.annotation.RequiresApi;
 import androidx.lifecycle.Observer;
 
+import com.dilawar.Matcher;
 import com.dilawar.Message;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
@@ -125,7 +126,7 @@ public class SmsPlugin extends Plugin {
                 boolean match = false;
                 for (int idx = 0; idx < cursor.getColumnCount(); idx++) {
                     String value = cursor.getString(idx);
-                    if (value instanceof String && value.contains(query)) {
+                    if (value instanceof String && Matcher.matches(query, value)) {
                         match = true;
                     }
                     data.put(cursor.getColumnName(idx), value);
