@@ -28,7 +28,7 @@
       <q-step :name="3" title="Check rule" icon="check">
         We'll also try to match existing SMS with this rule.
         <q-stepper-navigation>
-          <q-btn @click="saveRule" color="primary" label="Check And Save" />
+          <q-btn @click="saveRules" color="primary" label="Check And Save" />
           <q-btn flat @click="step = 2" color="primary" label="Back" class="q-ml-sm" />
         </q-stepper-navigation>
       </q-step>
@@ -43,17 +43,16 @@ import * as T from '../js/types';
 import * as S from '../js/storage';
 
 const step = ref(1);
-const ruleId: string = 'rule0';
-const rule: Ref<T.Rule> = ref(T.createRule());
+const rules: Ref<T.Rule[]> = ref([]);
+const thisRule: Ref<T.Rule> = ref(T.createRule());
 
 onMounted(async () => {
-  rule.value = (await S.loadRule(ruleId)) || T.createRule();
+  rules.value = await S.loadRules();
 });
 
-/**
- * Save this rule.
- */
-const saveRule = async () => {
-  await S.storeRule(ruleId, rule.value);
+/* Save rules */
+const saveRules = async () => {
+  rules.value.push(thisRule.value);
+  await S.storeRules();
 };
 </script>

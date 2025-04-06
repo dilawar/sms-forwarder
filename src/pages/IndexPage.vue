@@ -33,19 +33,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, type Ref, onUnmounted } from 'vue';
+import { ref, type Ref, onMounted, onUnmounted } from 'vue';
 import { setIntervalAsync, clearIntervalAsync } from 'set-interval-async';
 import { Capacitor } from '@capacitor/core';
 import BatteryOptimizationComponent from 'components/BatteryOptimizationComponent.vue';
 import ForwardingRules from 'components/ForwardingRules.vue';
+
 import Sms, { type Message } from '../plugins/sms';
 
+// Query for searching SMS
 const query = ref('');
 const queryResult: Ref<Message[]> = ref([]);
 
-/**
- * Total number of sms read.
- */
+/* Total number of sms read.  */
 const numMsgReceived: Ref<number> = ref(0);
 
 const readSmsLoop = setIntervalAsync(async () => {
