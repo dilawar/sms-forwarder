@@ -1,11 +1,17 @@
 package com.dilawar;
 
-public class Message {
-    public String sender;
-    public String message;
+import java.util.Optional;
 
-    public Message(String s, String m) {
-        sender = s;
-        message = m;
+public class Message {
+    public String fromAddress;
+    public String body;
+    public Optional<String> subject = null;
+    public long timestamp;
+
+    public Message(String address, String body, long timestamp) {
+        this.fromAddress = address;
+        this.body = body;
+        this.timestamp = timestamp;
     }
 }
+

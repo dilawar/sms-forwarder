@@ -22,6 +22,7 @@ import com.getcapacitor.annotation.PermissionCallback;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -72,8 +73,10 @@ public class SmsPlugin extends Plugin {
             Message m = listOfMessages.remove(0);
             JSONObject sms = new JSONObject();
             try {
-                sms.put("sender", m.sender);
-                sms.put("message", m.message);
+                sms.put("from_address", m.fromAddress);
+                sms.put("body", m.body);
+                sms.put("timestamp", m.timestamp);
+
                 ret.append("result", sms);
             } catch (JSONException e) {
                 Log.e(TAG, "Could not convert Message to JSON");
@@ -91,7 +94,6 @@ public class SmsPlugin extends Plugin {
     @PluginMethod()
     public void querySms(PluginCall call) {
         JSONObject listOfSms = new JSONObject();
-
         String query = call.getString("query").trim();
         if (query.isEmpty()) {
             Log.w(TAG, "Empty query. We'll no sms.");
@@ -100,23 +102,44 @@ public class SmsPlugin extends Plugin {
 
         Log.i(TAG, "Searching message with query '" + query + "'.");
         ContentResolver resolver = getContext().getContentResolver();
+
+        // Read SMS. This table has following columns
+        //
+        // id, thread_id, address, person:null,
+        // date:1743390339994, date_sent:1743390340000,
+        // protocol:0, read:1, status:-1,
+        // type:1, reply_path_present:0, subject:null, body:<string>,
+        // service_center:null locked:0 sub_id:1 error_code:0
+        // creator:com.google.android.apps.messaging
+        // seen:1
         Cursor cursor = resolver.query(Uri.parse("content://sms/inbox"),
+                new String[]{"address", "person", "date", "date_sent", "subject", "body"},
                 null, null,
                 null, null);
 
         if (cursor.moveToFirst()) { // must check the result to prevent exception
             do {
-                String msgData = "";
+                HashMap data = new HashMap<String, String>();
+
+                // check if any field matches the query
+                boolean match = false;
                 for (int idx = 0; idx < cursor.getColumnCount(); idx++) {
-                    msgData += " " + cursor.getColumnName(idx) + ":" + cursor.getString(idx);
+                    String value = cursor.getString(idx);
+                    if (value instanceof String && value.contains(query)) {
+                        match = true;
+                    }
+                    data.put(cursor.getColumnName(idx), value);
                 }
-                Log.d(TAG, ">> Got msg" + msgData);
-                // use msgData
-                if (msgData.isEmpty()) {
+                Log.d(TAG, ">> Got msg" + data);
+
+                if (!match) {
+                    // did not match any query.
                     continue;
                 }
+
+                // check if SMS matches the query of not.
                 try {
-                    listOfSms.append("result", msgData);
+                    listOfSms.append("result", data);
                 } catch (JSONException e) {
                     Log.e(TAG, "failed to convert msgData to JSON");
                 }
