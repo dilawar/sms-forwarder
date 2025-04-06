@@ -1,29 +1,36 @@
 <template>
-  <q-page-container>
-    <q-page padding class="row q-pa-sm justify-around" >
-      <forwarding-rules />
-      <!-- result section -->
-      <div>
-        Total SMS processed: <strong>{{ numMsgReceived }}</strong>
+  <q-page padding>
+    <battery-optimization-component title="Battery optimization" />
+    <forwarding-rules />
+
+    <!-- Result section -->
+    <div class="text-h6 q-py-sm">Live Result</div>
+    <q-list style="width: 60%; margin: auto">
+      <q-item>
+        <q-item-section>
+          <q-item-label overline>Total SMS processed </q-item-label>
+        </q-item-section>
+        <q-item-section side top>
+          <q-item-label> {{ numMsgReceived }} </q-item-label>
+        </q-item-section>
+      </q-item>
+    </q-list>
+
+    <!-- These are some buttons for testing. Remove them in release  -->
+    <div v-if="true">
+      <div class="text-h6 q-py-sm">Plugin Debugging</div>
+      <div margin class="q-gutter-sm items-start">
+        <q-btn @click="echoFromPlugin">Echo from plugin</q-btn>
+        <q-btn @click="readLiveSms">Read new SMS</q-btn>
+        <q-input v-model="query" label="Query" @change="sendQuery"></q-input>
       </div>
+    </div>
 
-      <!-- These are some buttons for testing. Remove them in release  -->
-      <div class="row">
-        <q-btn @click="echoFromPlugin">Echo From Plugin</q-btn>
-
-        <q-btn @click="readLiveSms">Read live message</q-btn>
-
-        <q-input v-model="query" /> <q-btn @click="sendQuery">Query SMS</q-btn>
-      </div>
-      <battery-optimization-component title="Battery optimization" />
-
-      <!-- place QPageScroller at end of page -->
-      <q-page-scroller position="bottom-left" :scroll-offset="150" :offset="[18, 18]">
-        <q-btn fab icon="keyboard_arrow_up" color="accent" />
-      </q-page-scroller>
-
-    </q-page>
-  </q-page-container>
+    <!-- place QPageScroller at end of page -->
+    <q-page-scroller position="bottom-left" :scroll-offset="150" :offset="[18, 18]">
+      <q-btn fab icon="keyboard_arrow_up" color="accent" />
+    </q-page-scroller>
+  </q-page>
 </template>
 
 <script setup lang="ts">
