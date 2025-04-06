@@ -23,7 +23,6 @@ import com.getcapacitor.annotation.PermissionCallback;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -120,7 +119,7 @@ public class SmsPlugin extends Plugin {
 
         if (cursor.moveToFirst()) { // must check the result to prevent exception
             do {
-                HashMap data = new HashMap<String, String>();
+                JSONObject data = new JSONObject();
 
                 // check if any field matches the query
                 boolean match = false;
@@ -129,7 +128,13 @@ public class SmsPlugin extends Plugin {
                     if (value instanceof String && Matcher.matches(query, value)) {
                         match = true;
                     }
-                    data.put(cursor.getColumnName(idx), value);
+
+                    try {
+                        data.put(cursor.getColumnName(idx), value);
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Failed to convert to JSON");
+                    }
+
                 }
 
                 Log.d(TAG, ">> Got msg" + data);
