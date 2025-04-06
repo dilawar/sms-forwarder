@@ -37,16 +37,15 @@
         </q-stepper-navigation>
       </q-step>
       <q-step :name="3" title="Check rule" icon="check">
-        We'll also try to match existing SMS with this rule.
+        <q-btn @click="checkThisRule" color="primary" label="Match" /> existing SMS with this rule.
         <q-stepper-navigation>
           <q-list>
-            <q-btn @click="checkThisRule" color="primary" label="Check" />
-            <q-btn @click="saveRules" color="primary" label="Save" />
-            <q-btn flat @click="step = 2" color="primary" label="Back" class="q-ml-sm" />
             <div v-if="matchedMessage && matchedMessage.length > 0">
               Following existing SMS were matched.
             </div>
             <format-sms :messages="matchedMessage"></format-sms>
+            <q-btn @click="saveRules" color="primary" label="Save" />
+            <q-btn flat @click="step = 2" color="primary" label="Back" class="q-ml-sm" />
           </q-list>
         </q-stepper-navigation>
       </q-step>
@@ -76,6 +75,7 @@ onMounted(async () => {
 const saveRules = async () => {
   rules.value.push(thisRule.value);
   await S.storeRules(rules.value);
+  step.value = 1;
 };
 
 const checkThisRule = async () => {

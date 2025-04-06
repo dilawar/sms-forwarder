@@ -4,7 +4,7 @@ export type Message = {
   sender: string;
   message: string;
   body?: string;
-  data?: number;
+  date?: number;
   address?: string;
 };
 
