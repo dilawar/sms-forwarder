@@ -4,8 +4,10 @@ import android.Manifest;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
 import androidx.lifecycle.Observer;
 
 import com.dilawar.Message;
@@ -85,14 +87,15 @@ public class SmsPlugin extends Plugin {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @PluginMethod()
     public void querySms(PluginCall call) {
-        JSObject ret = new JSObject();
+        JSONObject listOfSms = new JSONObject();
 
         String query = call.getString("query").trim();
         if (query.isEmpty()) {
             Log.w(TAG, "Empty query. We'll no sms.");
-            call.resolve(ret);
+            call.resolve(null);
         }
 
         Log.i(TAG, "Searching message with query '" + query + "'.");
@@ -107,9 +110,15 @@ public class SmsPlugin extends Plugin {
                 for (int idx = 0; idx < cursor.getColumnCount(); idx++) {
                     msgData += " " + cursor.getColumnName(idx) + ":" + cursor.getString(idx);
                 }
+                Log.d(TAG, ">> Got msg" + msgData);
                 // use msgData
-                if (!msgData.isEmpty()) {
-                    ret.put("message", msgData);
+                if (msgData.isEmpty()) {
+                    continue;
+                }
+                try {
+                    listOfSms.append("result", msgData);
+                } catch (JSONException e) {
+                    Log.e(TAG, "failed to convert msgData to JSON");
                 }
             } while (cursor.moveToNext());
         } else {
@@ -117,8 +126,11 @@ public class SmsPlugin extends Plugin {
             Log.w(TAG, "Empty INBOX.");
         }
 
-        // now send the data back.
-        call.resolve(ret);
+        try {
+            call.resolve(JSObject.fromJSONObject(listOfSms));
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to convert JSONObject to JSObject.");
+        }
     }
 
     @PluginMethod()
