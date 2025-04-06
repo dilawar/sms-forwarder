@@ -1,5 +1,6 @@
 <template>
   <q-page padding>
+
     <battery-optimization-component title="Battery optimization" />
     <forwarding-rules />
 
@@ -33,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, type Ref, onMounted, onUnmounted } from 'vue';
+import { ref, type Ref, onUnmounted } from 'vue';
 import { setIntervalAsync, clearIntervalAsync } from 'set-interval-async';
 import { Capacitor } from '@capacitor/core';
 import BatteryOptimizationComponent from 'components/BatteryOptimizationComponent.vue';
