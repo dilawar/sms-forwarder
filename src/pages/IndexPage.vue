@@ -5,12 +5,12 @@
 
     <!-- Result section -->
     <div class="text-h6 q-py-sm">Live Result</div>
-    <q-list style="width: 60%; margin: auto">
+    <q-list style="max-width: 500px; margin: auto">
       <q-item>
         <q-item-section>
-          <q-item-label overline>Total SMS processed </q-item-label>
+          <q-item-label>Total SMS processed </q-item-label>
         </q-item-section>
-        <q-item-section side top>
+        <q-item-section side>
           <q-item-label> {{ numMsgReceived }} </q-item-label>
         </q-item-section>
       </q-item>
@@ -22,7 +22,11 @@
       <div margin class="q-gutter-sm items-start">
         <q-btn @click="echoFromPlugin">Echo from plugin</q-btn>
         <q-btn @click="readLiveSms">Read new SMS</q-btn>
-        <q-input v-model="query" label="Query" @change="sendQuery"></q-input>
+        <q-input v-model="query" label="Query"></q-input>
+        <q-btn @click="sendQuery">Submit</q-btn>
+        <div>
+          {{ queryResult }}
+        </div>
       </div>
     </div>
   </q-page>
@@ -34,9 +38,10 @@ import { setIntervalAsync, clearIntervalAsync } from 'set-interval-async';
 import { Capacitor } from '@capacitor/core';
 import BatteryOptimizationComponent from 'components/BatteryOptimizationComponent.vue';
 import ForwardingRules from 'components/ForwardingRules.vue';
-import Sms from '../plugins/sms';
+import Sms, { type Message } from '../plugins/sms';
 
 const query = ref('');
+const queryResult: Ref<Message[]> = ref([]);
 
 /**
  * Total number of sms read.
@@ -62,11 +67,21 @@ const readLiveSms = async () => {
     return false;
   }
   const { result } = await Sms.getLiveSms();
+  if (!result) {
+    console.info('Result is empty.');
+    return;
+  }
+
   try {
     numMsgReceived.value += result.length;
   } catch (e) {
     /* handle error */
-    console.error('Failed to parse messages: ' + JSON.stringify(e));
+    console.error(
+      'Failed to parse messages: Error is ' +
+        JSON.stringify(e) +
+        '. Result is ' +
+        JSON.stringify(result)
+    );
   }
   console.debug('Got sms from plugin:', JSON.stringify(result));
 };
@@ -76,9 +91,11 @@ const sendQuery = async () => {
     console.debug('This plugin is only supported on android.');
     return false;
   }
-  console.log('Quering ' + query.value);
-  const { result } = await Sms.querySms({ query: query.value });
-  console.debug('Got sms from plugin for query: ', JSON.stringify(result));
+  const q = query.value;
+  console.info(`Quering '${q}'.`);
+  const { result } = await Sms.querySms({ query: q });
+  queryResult.value = result;
+  console.info('Got sms from plugin for query: ' + JSON.stringify(result));
 };
 
 onUnmounted(async () => {

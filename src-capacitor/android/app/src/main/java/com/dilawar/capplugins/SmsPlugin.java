@@ -85,20 +85,22 @@ public class SmsPlugin extends Plugin {
         }
     }
 
-    @PermissionCallback
-    private void querySms(PluginCall call) {
+    @PluginMethod()
+    public void querySms(PluginCall call) {
         JSObject ret = new JSObject();
 
         String query = call.getString("query").trim();
-        if (!query.isEmpty()) {
+        if (query.isEmpty()) {
             Log.w(TAG, "Empty query. We'll no sms.");
             call.resolve(ret);
         }
 
+        Log.i(TAG, "Searching message with query '" + query + "'.");
         ContentResolver resolver = getContext().getContentResolver();
         Cursor cursor = resolver.query(Uri.parse("content://sms/inbox"),
-                new String[]{"_id", "body", "address"}, null,
+                null, null,
                 null, null);
+
         if (cursor.moveToFirst()) { // must check the result to prevent exception
             do {
                 String msgData = "";
