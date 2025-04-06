@@ -25,11 +25,6 @@
         <q-input v-model="query" label="Query" @change="sendQuery"></q-input>
       </div>
     </div>
-
-    <!-- place QPageScroller at end of page -->
-    <q-page-scroller position="bottom-left" :scroll-offset="150" :offset="[18, 18]">
-      <q-btn fab icon="keyboard_arrow_up" color="accent" />
-    </q-page-scroller>
   </q-page>
 </template>
 
