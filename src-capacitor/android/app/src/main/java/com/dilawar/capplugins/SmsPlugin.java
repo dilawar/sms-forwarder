@@ -131,8 +131,8 @@ public class SmsPlugin extends Plugin {
                     }
                     data.put(cursor.getColumnName(idx), value);
                 }
-                Log.d(TAG, ">> Got msg" + data);
 
+                Log.d(TAG, ">> Got msg" + data);
                 if (!match) {
                     // did not match any query.
                     continue;
@@ -147,7 +147,7 @@ public class SmsPlugin extends Plugin {
             } while (cursor.moveToNext());
         } else {
             // empty box, no SMS
-            Log.w(TAG, "Empty INBOX.");
+            Log.i(TAG, "Empty INBOX.");
         }
 
         try {
@@ -168,6 +168,4 @@ public class SmsPlugin extends Plugin {
     private void smsPermissionCallback(PluginCall call) {
         Log.d(TAG, "smsPermissionCallback");
     }
-
-
 }

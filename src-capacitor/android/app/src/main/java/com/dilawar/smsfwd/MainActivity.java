@@ -12,5 +12,4 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(SmsPlugin.class);
         super.onCreate(savedInstanceState);
     }
-
 }
