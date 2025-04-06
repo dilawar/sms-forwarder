@@ -3,6 +3,9 @@ import { registerPlugin } from '@capacitor/core';
 export type Message = {
   sender: string;
   message: string;
+  body?: string;
+  data?: number;
+  address?: string;
 };
 
 export interface SmsPlugin {
