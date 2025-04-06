@@ -1,19 +1,33 @@
 <template>
-  <q-page class="row q-pa-sm justify-around">
-    <div>
-      <battery-optimization-component title="Battery optimization" />
-      <forwarding-rules />
-    </div>
+  <q-page padding>
+    <battery-optimization-component title="Battery optimization" />
+    <forwarding-rules />
 
-    <!-- result section -->
-    <div>
-      Total SMS processed: <strong>{{ numMsgReceived }}</strong>
-    </div>
+    <!-- Result section -->
+    <div class="text-h6 q-py-sm">Live Result</div>
+    <q-list style="max-width: 500px; margin: auto">
+      <q-item>
+        <q-item-section>
+          <q-item-label>Total SMS processed </q-item-label>
+        </q-item-section>
+        <q-item-section side>
+          <q-item-label> {{ numMsgReceived }} </q-item-label>
+        </q-item-section>
+      </q-item>
+    </q-list>
 
     <!-- These are some buttons for testing. Remove them in release  -->
-    <div class="row justify-around fit">
-      <q-btn @click="echoFromPlugin">Echo From Plugin</q-btn>
-      <q-btn @click="readLiveSms">Read live message</q-btn>
+    <div v-if="true">
+      <div class="text-h6 q-py-sm">Plugin Debugging</div>
+      <div margin class="q-gutter-sm items-start">
+        <q-btn @click="echoFromPlugin">Echo from plugin</q-btn>
+        <q-btn @click="readLiveSms">Read new SMS</q-btn>
+        <q-input v-model="query" label="Query"></q-input>
+        <q-btn @click="sendQuery">Submit</q-btn>
+        <div>
+          {{ queryResult }}
+        </div>
+      </div>
     </div>
   </q-page>
 </template>
@@ -24,7 +38,10 @@ import { setIntervalAsync, clearIntervalAsync } from 'set-interval-async';
 import { Capacitor } from '@capacitor/core';
 import BatteryOptimizationComponent from 'components/BatteryOptimizationComponent.vue';
 import ForwardingRules from 'components/ForwardingRules.vue';
-import Sms from '../plugins/sms';
+import Sms, { type Message } from '../plugins/sms';
+
+const query = ref('');
+const queryResult: Ref<Message[]> = ref([]);
 
 /**
  * Total number of sms read.
@@ -50,13 +67,35 @@ const readLiveSms = async () => {
     return false;
   }
   const { result } = await Sms.getLiveSms();
+  if (!result) {
+    console.info('Result is empty.');
+    return;
+  }
+
   try {
     numMsgReceived.value += result.length;
   } catch (e) {
     /* handle error */
-    console.error('Failed to parse messages: ' + JSON.stringify(e));
+    console.error(
+      'Failed to parse messages: Error is ' +
+        JSON.stringify(e) +
+        '. Result is ' +
+        JSON.stringify(result)
+    );
   }
   console.debug('Got sms from plugin:', JSON.stringify(result));
+};
+
+const sendQuery = async () => {
+  if (Capacitor.getPlatform() !== 'android') {
+    console.debug('This plugin is only supported on android.');
+    return false;
+  }
+  const q = query.value;
+  console.info(`Quering '${q}'.`);
+  const { result } = await Sms.querySms({ query: q });
+  queryResult.value = result;
+  console.info('Got sms from plugin for query: ' + JSON.stringify(result));
 };
 
 onUnmounted(async () => {

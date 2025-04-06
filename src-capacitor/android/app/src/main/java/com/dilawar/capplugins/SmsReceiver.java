@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.util.Log;
-// import android.widget.Toast;
 
 import com.dilawar.Message;
 
@@ -26,7 +25,7 @@ public class SmsReceiver extends BroadcastReceiver {
             if (bundle != null) {
                 // get sms objects
                 Object[] pdus = (Object[]) bundle.get("pdus");
-                if(pdus == null) {
+                if (pdus == null) {
                     return;
                 }
                 if (pdus.length == 0) {
@@ -38,17 +37,21 @@ public class SmsReceiver extends BroadcastReceiver {
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < pdus.length; i++) {
                     messages[i] = SmsMessage.createFromPdu((byte[]) pdus[i], "3gpp");
-                    sb.append(messages[i].getMessageBody());
+                    sb.append(messages[i].getDisplayMessageBody());
                 }
 
-                String sender = messages[0].getOriginatingAddress();
-                String message = sb.toString();
-                Log.d(TAG, message + " from " + sender);
+                String fromAddress = messages[0].getOriginatingAddress();
+                String body = sb.toString();
+                long timestamp_ms = messages[0].getTimestampMillis();
+
+                Log.d(TAG, body + " from " + fromAddress);
 
                 // Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
 
                 // Broadcast this message so that UI activity can listen to it.
-                LiveSmsManager.getLiveSms().sendNotification(new Message(sender, message));
+                LiveSmsManager.getLiveSms().sendNotification(
+                        new Message(fromAddress, body, (int) timestamp_ms)
+                );
             }
         }
     }
