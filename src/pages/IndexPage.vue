@@ -8,7 +8,7 @@
 
     <div class="justify">
       Total SMS processed <strong> {{ processedMessages.length }} </strong>
-      <processed-messages :messages="processedMessages" />
+      <processed-message :messages="processedMessages" />
     </div>
 
     <!-- These are some buttons for testing. Remove them in release  -->
