@@ -7,7 +7,8 @@
     <div class="text-h6 q-py-sm">Live Result</div>
 
     <div class="justify">
-      Total SMS processed <strong> {{ numMsgReceived }} </strong>
+      Total SMS processed <strong> {{ processedMessages.length }} </strong>
+      <processed-messages :messages="processedMessages" />
     </div>
 
     <!-- These are some buttons for testing. Remove them in release  -->
@@ -27,21 +28,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, type Ref, onUnmounted } from 'vue';
+import { ref, type Ref, onMounted, onUnmounted } from 'vue';
 import { setIntervalAsync, clearIntervalAsync } from 'set-interval-async';
 import { Capacitor } from '@capacitor/core';
 import BatteryOptimizationComponent from 'components/BatteryOptimizationComponent.vue';
 import ForwardingRules from 'components/ForwardingRules.vue';
+import ProcessedMessage from 'components/ProcessedMessage.vue';
 
 import Sms from '../plugins/sms';
 import { type Message } from '../js/types';
+import { loadMessages, storeMessage } from '../js/storage';
 
 // Query for searching SMS
 const query = ref('');
+const processedMessages: Ref<Message[]> = ref([]);
 const queryResult: Ref<Message[]> = ref([]);
 
-/* Total number of sms read.  */
-const numMsgReceived: Ref<number> = ref(0);
+onMounted(async () => {
+  processedMessages.value = await loadMessages();
+});
 
 const readSmsLoop = setIntervalAsync(async () => {
   await readLiveSms();
@@ -66,19 +71,29 @@ const readLiveSms = async () => {
     console.info('Result is empty.');
     return;
   }
-
   try {
-    numMsgReceived.value += result.length;
+    await handleIncomingMessages(result);
   } catch (e) {
     /* handle error */
-    console.error(
-      'Failed to parse messages: Error is ' +
-        JSON.stringify(e) +
-        '. Result is ' +
-        JSON.stringify(result)
-    );
+    console.error('Failed to handle incoming messages: Error is ' + JSON.stringify(e));
   }
-  console.debug('Got sms from plugin:', JSON.stringify(result));
+};
+
+const handleIncomingMessages = async (messages: Message[]) => {
+  console.debug('Handling sms received:' + JSON.stringify(messages));
+  for (const message of messages) {
+    await handleIncomingMessage(message);
+  }
+};
+
+const handleIncomingMessage = async (message: Message) => {
+  console.debug('Handle incoming message: ' + JSON.stringify(message));
+
+  // TODO: match with given pattern.,
+
+  // save in message history.
+  processedMessages.value.push(message);
+  await storeMessage(message);
 };
 
 const sendQuery = async () => {
@@ -86,6 +101,7 @@ const sendQuery = async () => {
     console.debug('This plugin is only supported on android.');
     return false;
   }
+
   const q = query.value;
   console.info(`Quering '${q}'.`);
   const { result } = await Sms.querySms({ query: q });

@@ -113,7 +113,7 @@ public class SmsPlugin extends Plugin {
         // creator:com.google.android.apps.messaging
         // seen:1
         Cursor cursor = resolver.query(Uri.parse("content://sms/inbox"),
-                new String[]{"address", "person", "date", "date_sent", "subject", "body"},
+                new String[]{"id", "address", "person", "date", "date_sent", "subject", "body"},
                 null, null,
                 null, null);
 
@@ -139,7 +139,6 @@ public class SmsPlugin extends Plugin {
 
                 Log.d(TAG, ">> Got msg" + data);
                 if (!match) {
-                    // did not match any query.
                     continue;
                 }
 
@@ -147,11 +146,11 @@ public class SmsPlugin extends Plugin {
                 try {
                     listOfSms.append("result", data);
                 } catch (JSONException e) {
-                    Log.e(TAG, "failed to convert msgData to JSON");
+                    Log.e(TAG, "Failed to convert msgData to JSON");
                 }
             } while (cursor.moveToNext());
         } else {
-            // empty box, no SMS
+            // Empty box, no SMS
             Log.i(TAG, "Empty INBOX.");
         }
 
