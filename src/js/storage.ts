@@ -35,10 +35,11 @@ export const storeMessage = async (message: Message) => {
  * Load stored messages
  */
 export const loadMessages = async (): Promise<Message[]> => {
-  console.info
+  console.info('[storage] Loading messages from Preferences...');
   const result: Message[] = [];
-  for (const key in Preferences.keys()) {
-    console.debug('Found key ' + key);
+  const keys = (await Preferences.keys()).keys;
+  console.debug('[storage] Found keys ' + JSON.stringify(keys));
+  for (const key of keys) {
     if (key.startsWith(KEY_PREFIX_SMS)) {
       const msg = await load<Message>(key);
       if (msg) {
@@ -46,6 +47,7 @@ export const loadMessages = async (): Promise<Message[]> => {
       }
     }
   }
+  console.info(`[storage] Total ${result.length} messages loaded.`);
   return result;
 };
 
