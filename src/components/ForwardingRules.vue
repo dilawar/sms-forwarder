@@ -59,13 +59,13 @@ import { ref, onMounted, type Ref } from 'vue';
 import * as T from '../js/types';
 import * as S from '../js/storage';
 import FormatSms from './FormatSms.vue';
-import Sms, { type Message } from '../plugins/sms';
+import Sms from '../plugins/sms';
 
 const step = ref(1);
 const rules: Ref<T.Rule[]> = ref([]);
 
 const thisRule: Ref<T.Rule> = ref(T.createRule());
-const matchedMessage: Ref<Message[]> = ref([]);
+const matchedMessage: Ref<T.Message[]> = ref([]);
 
 onMounted(async () => {
   rules.value = (await S.loadRules()) || [];

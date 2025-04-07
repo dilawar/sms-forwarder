@@ -1,12 +1,5 @@
 import { registerPlugin } from '@capacitor/core';
-
-export type Message = {
-  sender: string;
-  message: string;
-  body?: string;
-  date?: number;
-  address?: string;
-};
+import { type Message } from '../js/types';
 
 export interface SmsPlugin {
   // For testing.

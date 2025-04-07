@@ -24,6 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Vector;
 
 @CapacitorPlugin(
@@ -37,15 +38,12 @@ public class SmsPlugin extends Plugin {
     static final String RECEIVE_SMS = "RECEIVE_SMS";
     private final String TAG = "sms_plugin";
 
-    private final List<Message> listOfMessages = new Vector();
+    private final List<Message> listOfMessages = new Vector<>();
 
     // Observes SMS sent over LiveData.
-    private final Observer<Message> liveSmsObserver = new Observer<Message>() {
-        @Override
-        public void onChanged(Message m) {
-            Log.i(TAG, "Got new sms: " + m);
-            listOfMessages.add(m);
-        }
+    private final Observer<Message> liveSmsObserver = m -> {
+        Log.i(TAG, "Got new sms: " + m);
+        listOfMessages.add(m);
     };
 
     // When plugin is loaded.
@@ -66,11 +64,13 @@ public class SmsPlugin extends Plugin {
         call.resolve(ret);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @PluginMethod()
     public void getLiveSms(PluginCall call) {
         JSONObject ret = new JSONObject();
+        Message m;
         while (!listOfMessages.isEmpty()) {
-            Message m = listOfMessages.remove(0);
+            m = listOfMessages.remove(0);
             JSONObject sms = new JSONObject();
             try {
                 sms.put("from_address", m.fromAddress);
@@ -94,10 +94,17 @@ public class SmsPlugin extends Plugin {
     @PluginMethod()
     public void querySms(PluginCall call) {
         JSONObject listOfSms = new JSONObject();
-        String query = call.getString("query").trim();
+        String query = call.getString("query");
+        if (query == null) {
+            Log.w(TAG, "Null query. We'll no sms.");
+            call.resolve(null);
+            return;
+        }
+        query = query.trim();
         if (query.isEmpty()) {
             Log.w(TAG, "Empty query. We'll no sms.");
             call.resolve(null);
+            return;
         }
 
         Log.i(TAG, "Searching message with query '" + query + "'.");
@@ -113,47 +120,48 @@ public class SmsPlugin extends Plugin {
         // creator:com.google.android.apps.messaging
         // seen:1
         Cursor cursor = resolver.query(Uri.parse("content://sms/inbox"),
-                new String[]{"address", "person", "date", "date_sent", "subject", "body"},
+                new String[]{"id", "address", "person", "date", "date_sent", "subject", "body"},
                 null, null,
                 null, null);
 
-        if (cursor.moveToFirst()) { // must check the result to prevent exception
-            do {
-                JSONObject data = new JSONObject();
-
-                // check if any field matches the query
-                boolean match = false;
-                for (int idx = 0; idx < cursor.getColumnCount(); idx++) {
-                    String value = cursor.getString(idx);
-                    if (value instanceof String && Matcher.matches(query, value)) {
-                        match = true;
-                    }
-
-                    try {
-                        data.put(cursor.getColumnName(idx), value);
-                    } catch (JSONException e) {
-                        Log.e(TAG, "Failed to convert to JSON");
-                    }
-
-                }
-
-                Log.d(TAG, ">> Got msg" + data);
-                if (!match) {
-                    // did not match any query.
-                    continue;
-                }
-
-                // check if SMS matches the query of not.
-                try {
-                    listOfSms.append("result", data);
-                } catch (JSONException e) {
-                    Log.e(TAG, "failed to convert msgData to JSON");
-                }
-            } while (cursor.moveToNext());
-        } else {
-            // empty box, no SMS
+        if (!Objects.requireNonNull(cursor).moveToFirst()) {
+            // Empty box, no SMS
             Log.i(TAG, "Empty INBOX.");
+            cursor.close();
+            return;
         }
+        do {
+            JSONObject data = new JSONObject();
+
+            // check if any field matches the query
+            boolean match = false;
+            for (int idx = 0; idx < cursor.getColumnCount(); idx++) {
+                String value = cursor.getString(idx);
+                if (value != null && Matcher.matches(query, value)) {
+                    match = true;
+                }
+
+                try {
+                    data.put(cursor.getColumnName(idx), value);
+                } catch (JSONException e) {
+                    Log.e(TAG, "Failed to convert to JSON");
+                }
+
+            }
+
+            Log.d(TAG, ">> Got msg" + data);
+            if (!match) {
+                continue;
+            }
+
+            // check if SMS matches the query of not.
+            try {
+                listOfSms.append("result", data);
+            } catch (JSONException e) {
+                Log.e(TAG, "Failed to convert msgData to JSON");
+            }
+        } while (cursor.moveToNext());
+        cursor.close();
 
         try {
             call.resolve(JSObject.fromJSONObject(listOfSms));
