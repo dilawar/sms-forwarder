@@ -25,7 +25,11 @@ export type Message = {
   sender: string;
   message: string;
   body?: string;
+  // date and timestamp are the same.
   date?: number;
+  timestamp?: number;
+  // address and from_address are the same.
   address?: string;
+  from_address?: string;
 };
 
