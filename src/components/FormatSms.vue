@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { type Message } from '../plugins/sms';
+import { type Message } from '../js/types';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';

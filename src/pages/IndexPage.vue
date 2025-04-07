@@ -1,21 +1,14 @@
 <template>
   <q-page padding>
-
     <battery-optimization-component title="Battery optimization" />
     <forwarding-rules />
 
     <!-- Result section -->
     <div class="text-h6 q-py-sm">Live Result</div>
-    <q-list style="max-width: 500px; margin: auto">
-      <q-item>
-        <q-item-section>
-          <q-item-label>Total SMS processed </q-item-label>
-        </q-item-section>
-        <q-item-section side>
-          <q-item-label> {{ numMsgReceived }} </q-item-label>
-        </q-item-section>
-      </q-item>
-    </q-list>
+
+    <div class="justify">
+      Total SMS processed <strong> {{ numMsgReceived }} </strong>
+    </div>
 
     <!-- These are some buttons for testing. Remove them in release  -->
     <div v-if="true">
@@ -40,7 +33,8 @@ import { Capacitor } from '@capacitor/core';
 import BatteryOptimizationComponent from 'components/BatteryOptimizationComponent.vue';
 import ForwardingRules from 'components/ForwardingRules.vue';
 
-import Sms, { type Message } from '../plugins/sms';
+import Sms from '../plugins/sms';
+import { type Message } from '../js/types';
 
 // Query for searching SMS
 const query = ref('');
