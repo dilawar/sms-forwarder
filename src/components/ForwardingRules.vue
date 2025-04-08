@@ -61,6 +61,9 @@ import * as S from '../js/storage';
 import FormatSms from './FormatSms.vue';
 import Sms from '../plugins/sms';
 
+// Emit on change
+const emit = defineEmits(['change']);
+
 const step = ref(1);
 const rules: Ref<T.Rule[]> = ref([]);
 
@@ -69,6 +72,7 @@ const matchedMessage: Ref<T.Message[]> = ref([]);
 
 onMounted(async () => {
   rules.value = (await S.loadRules()) || [];
+  emit('change', rules.value);
 });
 
 /* Save rules */
@@ -76,6 +80,7 @@ const saveRules = async () => {
   rules.value.push(thisRule.value);
   await S.storeRules(rules.value);
   step.value = 1;
+  emit('change', rules.value);
 };
 
 const checkThisRule = async () => {
