@@ -37,7 +37,7 @@ import ForwardingRules from 'components/ForwardingRules.vue';
 import ProcessedMessage from 'components/ProcessedMessage.vue';
 
 import Sms from '../plugins/sms';
-import { type Message, type Rule, type RuleMatchType } from '../js/types';
+import { type Message, type Rule, RuleMatchType } from '../js/types';
 import { loadMessages, storeMessage } from '../js/storage';
 
 // Query for searching SMS
@@ -101,7 +101,7 @@ const handleIncomingMessage = async (message: Message) => {
   // TODO: match with given pattern.
   matchingRules.value.forEach( rule => {
     console.debug(111, JSON.stringify(rule));
-    if(messageMatchesRule(message, rule) === RuleMatchType.both ) {
+    if(messageMatchesRule(message, rule) === RuleMatchType.Both ) {
       console.info("Rule %o matches messages %o", rule, message);
     }
   })
@@ -132,12 +132,14 @@ onUnmounted(async () => {
   console.groupEnd();
 });
 
-const messageMatchesRule = (message: Message, rule: Rule) => {
-  var matchType = RuleMatchType.None;
-  if(message.from_address === rule.sender) {
+const messageMatchesRule = (message: Message, rule: Rule): RuleMatchType => {
+  let matchType = RuleMatchType.None;
+  if(message.from_address === rule.address) {
     matchType = RuleMatchType.Sender;
+    console.debug("matchType %s", matchType)
   }
 
+  return matchType
 }
 
 </script>
