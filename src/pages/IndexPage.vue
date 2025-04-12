@@ -29,6 +29,8 @@
 
 <script setup lang="ts">
 import { ref, type Ref, onMounted, onUnmounted } from 'vue';
+// @ts-expect-error: ts.d not found
+import globrex from 'globrex';
 import { setIntervalAsync, clearIntervalAsync } from 'set-interval-async';
 import { Capacitor } from '@capacitor/core';
 
@@ -77,7 +79,7 @@ const readLiveSms = async () => {
   }
   const { result } = await Sms.getLiveSms();
   if (!result) {
-    console.info('Result is empty.');
+    console.debug('Result is empty.');
     return;
   }
   try {
@@ -96,19 +98,26 @@ const handleIncomingMessages = async (messages: Message[]) => {
 };
 
 const handleIncomingMessage = async (message: Message) => {
+  console.group('handleIncomingMessage');
   console.debug('Handle incoming message: ' + JSON.stringify(message));
-
   // TODO: match with given pattern.
-  matchingRules.value.forEach( rule => {
-    console.debug(111, JSON.stringify(rule));
-    if(messageMatchesRule(message, rule) === RuleMatchType.Both ) {
-      console.info("Rule %o matches messages %o", rule, message);
+  matchingRules.value.forEach((rule) => {
+    console.debug('Trying rules %O', JSON.stringify(rule));
+    if (messageMatchesRule(message, rule) === RuleMatchType.Both) {
+      // notify that we have a successful match, do the forwarding
+      forwardSMS(message, rule);
     }
-  })
-
+  });
   // save in message history.
   processedMessages.value.push(message);
   await storeMessage(message);
+  console.groupEnd();
+};
+
+const forwardSMS = (message: Message, rule: Rule) => {
+  const text = message.body || message.message;
+  const forwards = rule.forward;
+  console.info('Forwarding `', text, '` because it matched', rule, ' to', forwards);
 };
 
 const sendQuery = async () => {
@@ -133,13 +142,17 @@ onUnmounted(async () => {
 });
 
 const messageMatchesRule = (message: Message, rule: Rule): RuleMatchType => {
+  const pattern = globrex(rule.glob);
+
   let matchType = RuleMatchType.None;
-  if(message.from_address === rule.address) {
-    matchType = RuleMatchType.Sender;
-    console.debug("matchType %s", matchType)
+  if (message.from_address === rule.sender) {
+    matchType |= RuleMatchType.Sender;
+  }
+  if (pattern.regex.test(message.body)) {
+    matchType |= RuleMatchType.Body;
   }
 
-  return matchType
-}
-
+  console.debug('matchType is %o', matchType);
+  return matchType;
+};
 </script>

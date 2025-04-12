@@ -5,7 +5,12 @@
   <q-list separator bordered class="q-my-sm" style="border-radius: 10px">
     <q-item v-for="(rule, key) in rules" :key="key">
       <q-item-section> {{ rule.glob }} </q-item-section>
-      <q-item-section> {{ rule.address }} </q-item-section>
+      <q-item-section v-for="(sender, key) in rule.senders" :key="key">
+        {{ sender }}
+      </q-item-section>
+      <q-item-section v-for="(forward, key) in rule.forwards" :key="key">
+        {{ forward }}
+      </q-item-section>
       <q-item-section avatar>
         <q-avatar color="primary" icon="phone" size="28px"> </q-avatar>
       </q-item-section>
@@ -22,8 +27,7 @@
     <q-stepper v-model="step" vertical color="primary" animated>
       <q-step :name="1" title="Add rules for SMS forwarding" icon="settings" :done="step > 1">
         Write a glob pattern that SMS must match
-        <q-input v-model="thisRule.glob" placeholder="*" label="glob that SMS must contain">
-        </q-input>
+        <q-input v-model="thisRule.glob" placeholder="*" label="glob that SMS must contain" />
 
         <q-stepper-navigation>
           <q-btn @click="step = 2" color="primary" label="Continue" />
@@ -31,7 +35,7 @@
       </q-step>
       <q-step :name="2" title="Phone/Email" icon="phone" :done="step > 2">
         <q-stepper-navigation>
-          <q-input v-model="thisRule.address" placeholder="type phone or email" />
+          <q-input v-model="thisRule.sender" placeholder="type phone or email" />
           <q-btn @click="step = 3" color="primary" label="Continue" class="q-ml-sm" />
           <q-btn flat @click="step = 1" color="primary" label="Back" class="q-ml-sm" />
         </q-stepper-navigation>
