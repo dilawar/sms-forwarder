@@ -112,7 +112,7 @@ public class SmsPlugin extends Plugin {
 
         // Read SMS. This table has following columns
         //
-        // id, thread_id, address, person:null,
+        // _id: <int>, thread_id, address, person:null,
         // date:1743390339994, date_sent:1743390340000,
         // protocol:0, read:1, status:-1,
         // type:1, reply_path_present:0, subject:null, body:<string>,
@@ -120,7 +120,7 @@ public class SmsPlugin extends Plugin {
         // creator:com.google.android.apps.messaging
         // seen:1
         Cursor cursor = resolver.query(Uri.parse("content://sms/inbox"),
-                new String[]{"id", "address", "person", "date", "date_sent", "subject", "body"},
+                new String[]{"_id", "address", "person", "date", "date_sent", "subject", "body"},
                 null, null,
                 null, null);
 
