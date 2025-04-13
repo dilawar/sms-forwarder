@@ -26,6 +26,6 @@ import { fromNow } from '../js/utils';
 const { messages } = defineProps<{ messages: Message[] }>();
 
 const sortedMessages = computed(() => {
-  return messages.toSorted((a, b) => a.timestamp - b.timestamp);
+  return messages.toSorted((a, b) => - a.timestamp + b.timestamp);
 });
 </script>
