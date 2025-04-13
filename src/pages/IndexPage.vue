@@ -113,12 +113,13 @@ const handleIncomingMessage = async (message: Message) => {
   console.groupEnd();
 };
 
-const forwardSMS = (message: Message, rule: Rule) => {
+const forwardSMS = async (message: Message, rule: Rule) => {
   const text = message.body;
   console.info('Forwarding `', text, '` because it matched', rule, ' to', rule.forward);
   // TODO: Currently there is not extra text that is appended/prefixed to this
   // SMS.
-  Sms.sendMessage({ forward: rule.forward, body: text });
+  const result = await Sms.sendMessage({ forward: rule.forward, body: text });
+  console.info("Result of sendMessage", JSON.stringify(result));
 };
 
 const sendQuery = async () => {

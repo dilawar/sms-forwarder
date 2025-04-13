@@ -12,7 +12,7 @@ export interface SmsPlugin {
   querySms(options: { query: string }): Promise<{ result: Message[] }>;
 
   // Send SMS
-  sendMessage(options: { forward: string; body: string }): boolean;
+  sendMessage(options: { forward: string; body: string }): Promise<{ result: boolean }>;
 
   // Request permission.
   requestPermissions(): Promise<void>;

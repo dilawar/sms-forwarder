@@ -103,6 +103,7 @@ public class SmsPlugin extends Plugin {
         // We assume that app has been granted required permissions.
         try {
             SmsManager smsManager = SmsManager.getDefault();
+            Log.i(TAG, "Sending message to " + phoneNumber + " with text '" + messageText + "'");
             smsManager.sendTextMessage(phoneNumber, null, messageText, null, null);
             ret.put("result", true);
         } catch (Exception e) {
