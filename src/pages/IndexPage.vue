@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <battery-optimization-component title="Battery optimization" />
+    <permissions-check title="Permissions" />
     <forwarding-rules @change="onUpdateRules" />
 
     <!-- Result section -->
@@ -31,7 +31,7 @@ import globrex from 'globrex';
 import { setIntervalAsync, clearIntervalAsync } from 'set-interval-async';
 import { Capacitor } from '@capacitor/core';
 
-import BatteryOptimizationComponent from 'components/BatteryOptimizationComponent.vue';
+import PermissionsCheck from 'components/PermissionsCheck.vue';
 import ForwardingRules from 'components/ForwardingRules.vue';
 import ProcessedMessage from 'components/ProcessedMessage.vue';
 

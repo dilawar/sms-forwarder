@@ -4,11 +4,11 @@
       This application under battery optimization. For this app to work properly in the background,
       please disable the battery optimization.
     </p>
-    <div class="row">
-      <q-btn class="col" @click="(_) => openBatteryOptimizationSettings()">
+    <div class="row q-pa-sm">
+      <q-btn @click="(_) => openBatteryOptimizationSettings()">
         Open Bettery Settings
       </q-btn>
-      <q-btn class="col" @click="(_) => requestIgnoreBatteryOptimization()">
+      <q-btn @click="(_) => requestIgnoreBatteryOptimization()">
         Ignore Battery Optimization
       </q-btn>
     </div>
