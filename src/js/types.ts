@@ -42,18 +42,13 @@ export enum RuleMatchType {
 
 export type Message = {
   readonly id: string;
-  readonly sender: string;
-  readonly message: string;
+
   // body of the message
-  readonly body?: string;
-
+  readonly body: string;
   // date and timestamp are the same.
-  readonly date?: number;
-  readonly timestamp?: number;
-
+  readonly timestamp: number;
   // address and from_address are the same.
-  readonly address?: string;
-  readonly from_address: string;
+  readonly sender: string;
 
   // matched rule
   matched_rules: Rule[];
