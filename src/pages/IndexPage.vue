@@ -1,7 +1,7 @@
 <template>
   <q-page padding>
     <battery-optimization-component title="Battery optimization" />
-    <forwarding-rules />
+    <forwarding-rules @change="onUpdateRules" />
 
     <!-- Result section -->
     <div class="text-h6 q-py-sm">Live Result</div>
@@ -29,24 +29,35 @@
 
 <script setup lang="ts">
 import { ref, type Ref, onMounted, onUnmounted } from 'vue';
+// @ts-expect-error: ts.d not found
+import globrex from 'globrex';
 import { setIntervalAsync, clearIntervalAsync } from 'set-interval-async';
 import { Capacitor } from '@capacitor/core';
+
 import BatteryOptimizationComponent from 'components/BatteryOptimizationComponent.vue';
 import ForwardingRules from 'components/ForwardingRules.vue';
 import ProcessedMessage from 'components/ProcessedMessage.vue';
 
 import Sms from '../plugins/sms';
-import { type Message } from '../js/types';
+import { type Message, type Rule, RuleMatchType } from '../js/types';
 import { loadMessages, storeMessage } from '../js/storage';
 
 // Query for searching SMS
 const query = ref('');
+const matchingRules: Ref<Rule[]> = ref([]);
 const processedMessages: Ref<Message[]> = ref([]);
 const queryResult: Ref<Message[]> = ref([]);
 
 onMounted(async () => {
   processedMessages.value = await loadMessages();
+  console.group('index');
+  console.info(`Loaded ${processedMessages.value.length} Messages...`);
 });
+
+const onUpdateRules = (rules: Rule[]) => {
+  console.info('[index] Got rules from component ', JSON.stringify(rules));
+  matchingRules.value = rules;
+};
 
 const readSmsLoop = setIntervalAsync(async () => {
   await readLiveSms();
@@ -68,7 +79,7 @@ const readLiveSms = async () => {
   }
   const { result } = await Sms.getLiveSms();
   if (!result) {
-    console.info('Result is empty.');
+    console.debug('Result is empty.');
     return;
   }
   try {
@@ -87,13 +98,25 @@ const handleIncomingMessages = async (messages: Message[]) => {
 };
 
 const handleIncomingMessage = async (message: Message) => {
+  console.group('handleIncomingMessage');
   console.debug('Handle incoming message: ' + JSON.stringify(message));
-
-  // TODO: match with given pattern.,
-
+  // TODO: match with given pattern.
+  matchingRules.value.forEach((rule) => {
+    console.debug('Trying rules %O', JSON.stringify(rule));
+    if (messageMatchesRule(message, rule) === RuleMatchType.Both) {
+      // notify that we have a successful match, do the forwarding
+      forwardSMS(message, rule);
+    }
+  });
   // save in message history.
   processedMessages.value.push(message);
   await storeMessage(message);
+  console.groupEnd();
+};
+
+const forwardSMS = (message: Message, rule: Rule) => {
+  const text = message.body || message.message;
+  console.info('Forwarding `', text, '` because it matched', rule, ' to', rule.forward);
 };
 
 const sendQuery = async () => {
@@ -114,5 +137,21 @@ onUnmounted(async () => {
     console.info('removing timer that reads sms');
     await clearIntervalAsync(readSmsLoop);
   }
+  console.groupEnd();
 });
+
+const messageMatchesRule = (message: Message, rule: Rule): RuleMatchType => {
+  const pattern = globrex(rule.glob);
+
+  let matchType = RuleMatchType.None;
+  if (message.from_address === rule.sender) {
+    matchType |= RuleMatchType.Sender;
+  }
+  if (pattern.regex.test(message.body)) {
+    matchType |= RuleMatchType.Body;
+  }
+
+  console.debug('matchType is %o', matchType);
+  return matchType;
+};
 </script>
