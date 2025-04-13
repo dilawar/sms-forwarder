@@ -99,14 +99,15 @@ const handleIncomingMessages = async (messages: Message[]) => {
 const handleIncomingMessage = async (message: Message) => {
   console.group('handleIncomingMessage');
   console.debug('Handle incoming message: ' + JSON.stringify(message));
+
   // TODO: match with given pattern.
-  matchingRules.value.forEach((rule) => {
-    console.debug('Trying rules %O', JSON.stringify(rule));
+  for (const rule of matchingRules.value) {
+    console.debug('Trying rules', JSON.stringify(rule));
     if (messageMatchesRule(message, rule) === RuleMatchType.Both) {
       // notify that we have a successful match, do the forwarding
-      forwardSMS(message, rule);
+      await forwardSMS(message, rule);
     }
-  });
+  }
   // save in message history.
   processedMessages.value.push(message);
   await storeMessage(message);
@@ -115,11 +116,11 @@ const handleIncomingMessage = async (message: Message) => {
 
 const forwardSMS = async (message: Message, rule: Rule) => {
   const text = message.body;
-  console.info('Forwarding `', text, '` because it matched', rule, ' to', rule.forward);
+  console.info('ForwardSms: Forwarding `', text, '` because it matched', rule, ' to', rule.forward);
   // TODO: Currently there is not extra text that is appended/prefixed to this
   // SMS.
   const result = await Sms.sendMessage({ forward: rule.forward, body: text });
-  console.info("Result of sendMessage", JSON.stringify(result));
+  console.info('ForwardSms: Result of sendMessage', JSON.stringify(result));
 };
 
 const sendQuery = async () => {
