@@ -4,10 +4,9 @@
     <forwarding-rules @change="onUpdateRules" />
 
     <!-- Result section -->
-    <div class="text-h6 q-py-sm">Live Result</div>
+    <div class="text-h6 q-py-sm">Matched SMS (realtime)</div>
 
     <div class="justify">
-      Total SMS processed <strong> {{ processedMessages.length }} </strong>
       <processed-message :messages="processedMessages" />
     </div>
 
@@ -115,7 +114,7 @@ const handleIncomingMessage = async (message: Message) => {
 };
 
 const forwardSMS = (message: Message, rule: Rule) => {
-  const text = message.body || message.message;
+  const text = message.body;
   console.info('Forwarding `', text, '` because it matched', rule, ' to', rule.forward);
 };
 
@@ -144,7 +143,7 @@ const messageMatchesRule = (message: Message, rule: Rule): RuleMatchType => {
   const pattern = globrex(rule.glob);
 
   let matchType = RuleMatchType.None;
-  if (message.from_address === rule.sender) {
+  if (message.sender === rule.sender) {
     matchType |= RuleMatchType.Sender;
   }
   if (pattern.regex.test(message.body)) {

@@ -73,7 +73,7 @@ public class SmsPlugin extends Plugin {
             m = listOfMessages.remove(0);
             JSONObject sms = new JSONObject();
             try {
-                sms.put("from_address", m.fromAddress);
+                sms.put("sender", m.sender);
                 sms.put("body", m.body);
                 sms.put("timestamp", m.timestamp);
 
@@ -130,6 +130,7 @@ public class SmsPlugin extends Plugin {
             cursor.close();
             return;
         }
+
         do {
             JSONObject data = new JSONObject();
 

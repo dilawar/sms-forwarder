@@ -46,11 +46,9 @@ public class SmsReceiver extends BroadcastReceiver {
 
                 Log.d(TAG, body + " from " + fromAddress);
 
-                // Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-
                 // Broadcast this message so that UI activity can listen to it.
                 LiveSmsManager.getLiveSms().sendNotification(
-                        new Message(fromAddress, body, (int) timestamp_ms)
+                        new Message(fromAddress, body, timestamp_ms)
                 );
             }
         }

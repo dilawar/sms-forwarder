@@ -64,7 +64,7 @@ export const loadMessages = async (): Promise<Message[]> => {
   for (const key of keys) {
     if (key.startsWith(KEY_PREFIX_SMS)) {
       const msg = await load<Message>(key);
-      if (msg) {
+      if (msg?.sender && msg?.body) {
         result.push(msg);
       }
     }

@@ -2,8 +2,8 @@
   <q-list separator>
     <q-item v-for="(message, key) in messages" :key="key">
       <q-item-label>
-        <q-chip> {{ message.address }} </q-chip>
-        <q-chip>{{ dayjs(message.date).fromNow() }}</q-chip>
+        <q-chip> {{ message.sender }} </q-chip>
+        <q-chip>{{ dayjs(message.timestamp).fromNow() }}</q-chip>
         {{ message.body }}
       </q-item-label>
     </q-item>
