@@ -116,8 +116,7 @@ const handleIncomingMessage = async (message: Message) => {
 
 const forwardSMS = (message: Message, rule: Rule) => {
   const text = message.body || message.message;
-  const forwards = rule.forward;
-  console.info('Forwarding `', text, '` because it matched', rule, ' to', forwards);
+  console.info('Forwarding `', text, '` because it matched', rule, ' to', rule.forward);
 };
 
 const sendQuery = async () => {

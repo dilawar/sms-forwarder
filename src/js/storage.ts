@@ -23,6 +23,28 @@ export const loadRules = async (): Promise<Rule[] | null> => {
 };
 
 /**
+ * Delete a given rule and return the rules from the database.
+ */
+export const deleteRule = async (rule: Rule): Promise<Rule[]> => {
+  // prompt use if they are sure
+
+  let rules = (await loadRules()) || [];
+  console.debug('[STORAGE] deleting ', JSON.stringify(rule), ' from ', JSON.stringify(rules));
+
+  rules = rules.filter((item) => {
+    // This must be true in most versions.
+    if (rule?.id) {
+      return rule?.id === item?.id;
+    }
+    // delete this after testing and retiring old versions.
+    return item.glob !== rule.glob;
+  });
+  console.debug('[STORAGE] after deleting ', JSON.stringify(rules));
+  await storeRules(rules);
+  return rules;
+};
+
+/**
  * Save a processed message to store
  */
 export const storeMessage = async (message: Message) => {

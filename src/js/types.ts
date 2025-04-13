@@ -1,3 +1,5 @@
+import { v7 as uuidv7 } from 'uuid';
+
 /**
  * Types
  */
@@ -6,23 +8,21 @@
  * Rule
  */
 export type Rule = {
+  // must be unique.
+  id: string;
   // glob that matches a given message's body.
   glob: string;
-
   // Address of the sender or senders
-  sender?: string;
-  senders: Array<string>;
-
+  sender: string;
   // List of addresses this message should be forward to
-  forward?: string;
-  forwards: Array<string>;
+  forward: string;
 };
 
 /**
  * Factory function to create a default Rule
  */
-export const createRule = (glob = '', senders = [], forwards = []): Rule => {
-  return { glob: glob, senders: senders, forwards: forwards };
+export const createRule = (glob = '', sender = '', forward = ''): Rule => {
+  return { id: uuidv7(), glob: glob, sender: sender, forward: forward };
 };
 
 /**
@@ -40,7 +40,7 @@ export enum RuleMatchType {
   Both = 3, // 0011
 }
 
-export interface Message {
+export type Message = {
   readonly id: string;
   readonly sender: string;
   readonly message: string;
@@ -53,10 +53,10 @@ export interface Message {
 
   // address and from_address are the same.
   readonly address?: string;
-  readonly from_address?: string;
+  readonly from_address: string;
 
   // matched rule
   matched_rules: Rule[];
   // forwarded
   is_forwarded?: boolean;
-}
+};
