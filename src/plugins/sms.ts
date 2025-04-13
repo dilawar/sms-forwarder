@@ -11,6 +11,9 @@ export interface SmsPlugin {
   // Query SMS
   querySms(options: { query: string }): Promise<{ result: Message[] }>;
 
+  // Send SMS
+  sendMessage(options: { forward: string; body: string }): boolean;
+
   // Request permission.
   requestPermissions(): Promise<void>;
 }
