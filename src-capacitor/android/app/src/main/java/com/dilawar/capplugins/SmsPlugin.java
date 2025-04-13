@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.telephony.SmsManager;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
@@ -68,6 +69,7 @@ public class SmsPlugin extends Plugin {
     @PluginMethod()
     public void getLiveSms(PluginCall call) {
         JSONObject ret = new JSONObject();
+
         Message m;
         while (!listOfMessages.isEmpty()) {
             m = listOfMessages.remove(0);
@@ -88,6 +90,27 @@ public class SmsPlugin extends Plugin {
         } catch (Exception e) {
             Log.w(TAG, "Failed to convert JSONObject to JSObject.");
         }
+    }
+
+    @PluginMethod()
+    public void sendMessage(PluginCall call) {
+        JSObject ret = new JSObject();
+        ret.put("result", false);
+
+        String phoneNumber = call.getString("forward");
+        String messageText = call.getString("body");
+
+        // We assume that app has been granted required permissions.
+        try {
+            SmsManager smsManager = SmsManager.getDefault();
+            Log.i(TAG, "Sending message to " + phoneNumber + " with text '" + messageText + "'");
+            smsManager.sendTextMessage(phoneNumber, null, messageText, null, null);
+            ret.put("result", true);
+        } catch (Exception e) {
+            // Handle any exceptions
+            Log.e(TAG, "Failed to send message " + e.toString());
+        }
+        call.resolve(ret);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)

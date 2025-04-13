@@ -1,0 +1,2 @@
+sync:
+	npx cap sync
