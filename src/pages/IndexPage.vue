@@ -4,8 +4,6 @@
     <forwarding-rules @change="onUpdateRules" />
 
     <!-- Result section -->
-    <div class="text-h6 q-py-sm">Matched SMS (realtime)</div>
-
     <div class="justify">
       <processed-message :messages="processedMessages" />
     </div>
@@ -97,13 +95,13 @@ const handleIncomingMessages = async (messages: Message[]) => {
 };
 
 const handleIncomingMessage = async (message: Message) => {
-  console.group('handleIncomingMessage');
-  console.debug('Handle incoming message: ' + JSON.stringify(message));
+  console.debug('[rule] Handle incoming message: ' + JSON.stringify(message));
 
   // TODO: match with given pattern.
   for (const rule of matchingRules.value) {
-    console.debug('Trying rules', JSON.stringify(rule));
+    console.debug('[rule] Trying rules', JSON.stringify(rule));
     if (messageMatchesRule(message, rule) === RuleMatchType.Both) {
+      console.debug('[rule] Rule', JSON.stringify(rule), ' matched');
       // notify that we have a successful match, do the forwarding
       await forwardSMS(message, rule);
     }
@@ -111,16 +109,15 @@ const handleIncomingMessage = async (message: Message) => {
   // save in message history.
   processedMessages.value.push(message);
   await storeMessage(message);
-  console.groupEnd();
 };
 
 const forwardSMS = async (message: Message, rule: Rule) => {
   const text = message.body;
-  console.info('ForwardSms: Forwarding `', text, '` because it matched', rule, ' to', rule.forward);
+  console.info('[rule] Forwarding `', text, '` because it matched', rule, ' to', rule.forward);
   // TODO: Currently there is not extra text that is appended/prefixed to this
   // SMS.
   const result = await Sms.sendMessage({ forward: rule.forward, body: text });
-  console.info('ForwardSms: Result of sendMessage', JSON.stringify(result));
+  console.info('[rule] ForwardSms: Result of sendMessage', JSON.stringify(result));
 };
 
 const sendQuery = async () => {
@@ -146,16 +143,16 @@ onUnmounted(async () => {
 
 const messageMatchesRule = (message: Message, rule: Rule): RuleMatchType => {
   const pattern = globrex(rule.glob);
+  const senderPattern = globrex(rule.sender.trim() || '*');
 
   let matchType = RuleMatchType.None;
-  if (message.sender === rule.sender) {
+  if (senderPattern.regex.test(message.sender)) {
     matchType |= RuleMatchType.Sender;
   }
   if (pattern.regex.test(message.body)) {
     matchType |= RuleMatchType.Body;
   }
-
-  console.debug('matchType is %o', matchType);
+  console.debug('[rule] matchType is %o', matchType);
   return matchType;
 };
 </script>

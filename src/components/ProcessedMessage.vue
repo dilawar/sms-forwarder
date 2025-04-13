@@ -1,6 +1,8 @@
 <template>
   <q-scroll-area style="height: 300px">
-    Total SMS processed <strong> {{ sortedMessages.length }} </strong>
+    <div class="text-h6 q-py-sm">
+      Forwarded SMS: <strong> {{ sortedMessages.length }} </strong>
+    </div>
     <q-list separator>
       <q-item v-for="(message, key) in sortedMessages" :key="key">
         <q-item-section>
@@ -26,6 +28,6 @@ import { fromNow } from '../js/utils';
 const { messages } = defineProps<{ messages: Message[] }>();
 
 const sortedMessages = computed(() => {
-  return messages.toSorted((a, b) => - a.timestamp + b.timestamp);
+  return messages.toSorted((a, b) => -a.timestamp + b.timestamp);
 });
 </script>
