@@ -2,6 +2,7 @@ package com.dilawar.capplugins;
 
 import android.Manifest;
 import android.content.ContentResolver;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -32,11 +33,13 @@ import java.util.Vector;
         name = "SmsPlugin",
         permissions = {
                 @Permission(strings = {Manifest.permission.RECEIVE_SMS}, alias = SmsPlugin.RECEIVE_SMS),
+                @Permission(strings = {Manifest.permission.READ_SMS}, alias = SmsPlugin.READ_SMS),
         }
 )
 public class SmsPlugin extends Plugin {
     // Permission alias constants.
     static final String RECEIVE_SMS = "RECEIVE_SMS";
+    static final String READ_SMS = "READ_SMS";
     private final String TAG = "sms_plugin";
 
     private final List<Message> listOfMessages = new Vector<>();
@@ -116,6 +119,10 @@ public class SmsPlugin extends Plugin {
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @PluginMethod()
     public void querySms(PluginCall call) {
+
+        // checks that we are read sms permission.
+        requestPermissions(call);
+
         JSONObject listOfSms = new JSONObject();
         String query = call.getString("query");
         if (query == null) {
@@ -170,7 +177,6 @@ public class SmsPlugin extends Plugin {
                 } catch (JSONException e) {
                     Log.e(TAG, "Failed to convert to JSON");
                 }
-
             }
 
             Log.d(TAG, ">> Got msg" + data);
@@ -199,10 +205,20 @@ public class SmsPlugin extends Plugin {
         Log.d(TAG, "User requested SMS related permissions.");
         String[] aliases = {RECEIVE_SMS};
         super.requestPermissionForAliases(aliases, call, "smsPermissionCallback");
+
+        String[] readSms = {READ_SMS};
+        super.requestPermissionForAliases(readSms, call, "smsPermissionCallback");
     }
 
     @PermissionCallback
     private void smsPermissionCallback(PluginCall call) {
-        Log.d(TAG, "smsPermissionCallback");
+        Log.d(TAG, "callback after asking user permission.");
+
+        // check the READ_SMS permission has been granted.
+        String perm = Manifest.permission.READ_SMS;
+        int res = getContext().checkCallingOrSelfPermission(perm);
+        if(res != PackageManager.PERMISSION_GRANTED) {
+            Log.w(TAG, "We dont have READ_SMS permission yet.");
+        }
     }
 }
