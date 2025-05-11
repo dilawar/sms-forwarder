@@ -38,8 +38,8 @@ import java.util.Vector;
 )
 public class SmsPlugin extends Plugin {
     // Permission alias constants.
-    static final String RECEIVE_SMS = "RECEIVE_SMS";
-    static final String READ_SMS = "READ_SMS";
+    static final String RECEIVE_SMS = "android.permission.RECEIVE_SMS";
+    static final String READ_SMS = "android.permission.READ_SMS";
     private final String TAG = "sms_plugin";
 
     private final List<Message> listOfMessages = new Vector<>();
@@ -111,7 +111,7 @@ public class SmsPlugin extends Plugin {
             ret.put("result", true);
         } catch (Exception e) {
             // Handle any exceptions
-            Log.e(TAG, "Failed to send message " + e.toString());
+            Log.e(TAG, "Failed to send message " + e);
         }
         call.resolve(ret);
     }
@@ -139,6 +139,9 @@ public class SmsPlugin extends Plugin {
 
         Log.i(TAG, "Searching message with query '" + query + "'.");
         ContentResolver resolver = getContext().getContentResolver();
+
+        // Check if we have permission to read URI.
+
 
         // Read SMS. This table has following columns
         //
@@ -218,7 +221,7 @@ public class SmsPlugin extends Plugin {
         String perm = Manifest.permission.READ_SMS;
         int res = getContext().checkCallingOrSelfPermission(perm);
         if(res != PackageManager.PERMISSION_GRANTED) {
-            Log.w(TAG, "We dont have READ_SMS permission yet.");
+            Log.w(TAG, "We don't have READ_SMS permission!");
         }
     }
 }
