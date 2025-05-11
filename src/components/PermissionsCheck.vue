@@ -1,9 +1,9 @@
 <template>
   <div v-if="batteryOptmization">
-    <p>
-      This application under battery optimization. For this app to work properly in the background,
-      please disable the battery optimization.
-    </p>
+    <div class="text-weight-bolder">
+      <p> 🛈 This application is under battery optimization.  </p>
+      <p> To read and send SMS reliably, this app needs to work in the background, please disable the battery optimization.</p>
+    </div>
 
     <div class="row q-px-sm">
       <q-btn class="col" @click="(_) => openBatteryOptimizationSettings()">
@@ -14,17 +14,17 @@
       </q-btn>
     </div>
   </div>
-  <div v-else>
-    <p>This app is not under battery optimization. Yay!</p>
-  </div>
 
   <div v-if="!smsPermission">
-    <p>This application needs SMS read/send permissions.</p>
+    <span class="text-weight-bolder">
+      🛈  This app needs SMS read/send permissions to function.
+    </span>
 
     <div class="row q-px-sm">
       <q-btn class="col" @click="requestSmsPermissions"> Request SMS Permissions </q-btn>
     </div>
   </div>
+
 </template>
 
 <script setup lang="ts">

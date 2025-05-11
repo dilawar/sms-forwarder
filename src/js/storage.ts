@@ -32,12 +32,7 @@ export const deleteRule = async (rule: Rule): Promise<Rule[]> => {
   console.debug('[STORAGE] deleting ', JSON.stringify(rule), ' from ', JSON.stringify(rules));
 
   rules = rules.filter((item) => {
-    // This must be true in most versions.
-    if (rule?.id) {
-      return rule?.id === item?.id;
-    }
-    // delete this after testing and retiring old versions.
-    return item.glob !== rule.glob;
+    return rule.id !== item.id;
   });
   console.debug('[STORAGE] after deleting ', JSON.stringify(rules));
   await storeRules(rules);
